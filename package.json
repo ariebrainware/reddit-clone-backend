@@ -1,9 +1,12 @@
 {
   "name": "redit-clone-backend",
   "version": "0.0.0",
+  "engines": {
+    "node": "10.15.3"
+  },
   "private": true,
   "scripts": {
-    "start": "node index",
+    "start": "npm i && node index",
     "dev": "nodemon index"
   },
   "dependencies": {

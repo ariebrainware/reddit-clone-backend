@@ -16,7 +16,6 @@ require('dotenv-extended').load({
 })
 
 const env = process.env.NODE_ENV || 'development'
-console.log(env)
 const redis = env !== 'development' 
   ? new Redis({
     password: process.env.DBPASS,
