@@ -1,0 +1,5 @@
+run:
+  web: npm i && node index.js
+build:
+  config:
+    NODE_ENV: production
