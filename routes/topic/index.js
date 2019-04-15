@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const Redis = require('ioredis')
+const uuid = require('uuid/v4')
 
 require('dotenv-extended').load({
   encoding: 'utf8',
@@ -31,8 +32,9 @@ router.get('/', (req, res, next) => {
       })
 })
 
-router.post('/add', async (req, res, next) => {  
-  const response =  await redis.hmset('post', {text: req.body.text, upvotes: req.body.upvotes})
+router.post('/add', async (req, res, next) => {
+  const { text, upvotes } = req.body
+  const response =  await redis.hmset('post', { key: uuid(), text, upvotes })
   if(!response) res.status(500).send({message: 'Input error'})
   res.status(200).send(response)
 })
