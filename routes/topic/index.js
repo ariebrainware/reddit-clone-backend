@@ -25,19 +25,16 @@ const redis = env !== 'development'
   }) : new Redis()
 
 router.get('/', (req, res, next) => {
-    redis.get('post', (err, result) => {
+    redis.hgetall('post',(err, result) => {
         if(err) res.status(500).send({message: err})
-        res.status(200).send({
-            text: result,
-            env: process.env.NODE_ENV
-        })
-    })
+        res.status(200).send(result)
+      })
 })
 
-router.post('/add', async (req, res, next) => {
-    const { text } = req.body
-    const response =  await redis.set('post', text)
-    if(response) res.status(200).send(response)
+router.post('/add', async (req, res, next) => {  
+  const response =  await redis.hmset('post', {text: req.body.text, upvotes: req.body.upvotes})
+  if(!response) res.status(500).send({message: 'Input error'})
+  res.status(200).send(response)
 })
 
 module.exports = router
