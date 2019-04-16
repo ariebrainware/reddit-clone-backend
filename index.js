@@ -12,7 +12,7 @@ const app = require('./app')
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(process.env.PORT || '3001')
 app.set('port', port)
 
 /**
@@ -87,5 +87,5 @@ function onListening() {
     `pipe ${addr}` :
     `port ${addr.port}`
   debug(`Listening on ${bind}`)
-  console.log('Server is listening on port 3000')
+  console.log('Server is listening on port 3001')
 }
