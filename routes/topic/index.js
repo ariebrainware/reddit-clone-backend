@@ -27,19 +27,25 @@ const redis = env !== 'development'
 
 router.get('/', async (req, res) => {
   try {
-    const response = await redis.lrange('text', 0, -1)
-    res.status(200).send({
-      text: response
+    const response = await redis.lrange('topic', 0, -1)
+    const result = response.map(data => {
+      return JSON.parse(data)
     })
+    res.status(200).send(result)
   } catch (err) {
     res.status(500).send(err)
   }
 })
 
 router.post('/add', async (req, res) => {
+
   try {
-    const { text, upvotes } = req.body
-    await redis.rpush('text', { text, upvotes })
+    const data = {
+      text: req.body.text,
+      upvotes: req.body.upvotes,
+    }
+
+    await redis.rpush('topic', JSON.stringify(data))
     res.status(200).send({ message: 'Post saved!!'})
   } catch(err) {
     res.status(500).send(err)
