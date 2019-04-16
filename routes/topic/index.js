@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const Redis = require('ioredis')
+const Redis = require('redis')
 const uuid = require('uuid/v4')
 
 require('dotenv-extended').load({
@@ -18,32 +18,28 @@ require('dotenv-extended').load({
 
 const env = process.env.NODE_ENV || 'development'
 const redis = env !== 'development' 
-  ? new Redis({
-    password: process.env.DBPASS,
-    host: process.env.DBHOST,
-    port: process.env.DBPORT,
-    db: 0
-  }) : new Redis()
+  ? Redis.createClient({
+      password: process.env.DBPASS,
+      host: process.env.DBHOST,
+      port: process.env.DBPORT,
+      db: process.env.DBNAME
+  }) : Redis.createClient()
 
 router.get('/', async (req, res) => {
-  try {
-    const response = await redis.lrange('text', 0, -1)
+  redis.lrange('topic', 0, -1, (err, result) => {
+    if(err) res.status(500).send(err)
     res.status(200).send({
-      text: response
+      text: result
     })
-  } catch (err) {
-    res.status(500).send(err)
-  }
+  })
 })
 
 router.post('/add', async (req, res) => {
-  try {
-    const { text, upvotes } = req.body
-    await redis.rpush('text', { text, upvotes })
+  const { text, upvotes } = req.body
+  redis.rpush('topic', text, upvotes, (err, result) => {
+    if(err) res.status(500).send(err)
     res.status(200).send({ message: 'Post saved!!'})
-  } catch(err) {
-    res.status(500).send(err)
-  }
+  })
 })
 
 module.exports = router
