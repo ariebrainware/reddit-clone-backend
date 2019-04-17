@@ -42,7 +42,7 @@ router.post('/add', async (req, res) => {
   try {
     const data = {
       text: req.body.text,
-      upvotes: req.body.upvotes,
+      upvotes: req.body.upvotes || 0,
     }
 
     await redis.rpush('topic', JSON.stringify(data))
