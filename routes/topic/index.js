@@ -38,18 +38,36 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/add', async (req, res) => {
-
   try {
+    const id = uuid().split('-')
     const data = {
+      id: id[0],
       text: req.body.text,
       upvotes: req.body.upvotes || 0,
     }
-
     await redis.rpush('topic', JSON.stringify(data))
     res.status(200).send({ message: 'Post saved!!'})
   } catch(err) {
     res.status(500).send(err)
   }
+})
+
+router.put('/upvotes/:id', async (req, res) => {
+  const { id } = req.params
+  if(id) {
+    redis.hgetall('topic', (err, obj) => {
+      if(!err) {
+        for(const x in obj) {
+          let n = 1
+          const updatedData = {
+            text: obj[x],
+            upvotes: n++,
+          }
+          res.status(200).send(updatedData)
+        }
+      } else res.status(500).send(err)
+    })
+  } else res.status(400).send({message: "Please provide topic id!"})
 })
 
 module.exports = router
